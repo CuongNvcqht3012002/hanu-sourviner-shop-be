@@ -30,10 +30,6 @@
 
 ```bash
 $ yarn install
-
-$ cp .env.development .env
-
-Then change the database password
 ```
 
 ## Running the app
@@ -43,7 +39,7 @@ Then change the database password
 $ yarn run start
 
 # watch mode
-$ yarn run dev
+$ yarn run start:dev
 
 # production mode
 $ yarn run start:prod

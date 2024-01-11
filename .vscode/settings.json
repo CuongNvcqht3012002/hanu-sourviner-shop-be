@@ -18,7 +18,11 @@
   "autoimport.useSemiColon": false,
   "typescript.updateImportsOnFileMove.enabled": "always",
   "cSpell.words": [
-    "middlewares",
-    "typeorm"
+    "chakra",
+    "smastrom",
+    "swiper",
+    "tanstack",
+    "webp",
+    "zustand"
   ],
 }

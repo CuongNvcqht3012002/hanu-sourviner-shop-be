@@ -78,7 +78,7 @@ jobs:
           username: ${{ secrets.VM_USERNAME }}
           password: ${{ secrets.VM_PASSWORD }}
           script: |
-            cd /home/hanu-sourviner-backend
+            cd /home/be-hanu-sourviner-shop
             git checkout production
             git pull origin production
             cp .env.production .env

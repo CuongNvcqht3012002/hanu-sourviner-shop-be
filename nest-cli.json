@@ -4,6 +4,6 @@
   "sourceRoot": "src",
   "compilerOptions": {
     "assets": ["modules/mail/mail-templates/**/*"],
-    "watchAssets": true
+    "deleteOutDir": true
   }
 }

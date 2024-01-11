@@ -36,6 +36,6 @@ async function bootstrap() {
   // Exception
   app.useGlobalFilters(new BaseExceptionFilter())
 
-  await app.listen(configService.get('APP_PORT'))
+  await app.listen(configService.get('app.port'))
 }
 bootstrap()
