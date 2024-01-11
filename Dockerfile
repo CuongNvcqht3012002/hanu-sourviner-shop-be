@@ -4,8 +4,8 @@
 
 FROM node:18-alpine As development
 WORKDIR /usr/src/app
-COPY package.json yarn.lock startup.sh .env.production ./
-RUN yarn install --frozen-lockfile
+COPY package.json startup.sh .env.production ./
+# RUN npm ci --frozen-lockfile
 COPY . .
 
 ###################
@@ -14,14 +14,14 @@ COPY . .
 
 FROM node:18-alpine As build
 WORKDIR /usr/src/app
-COPY package.json yarn.lock startup.sh .env.production ./
+COPY package.json startup.sh .env.production ./
 COPY --from=development /usr/src/app/node_modules ./node_modules
 COPY . .
 # RUN yarn build:prod
-RUN yarn build
+RUN npm run build
 # Removes the existing node_modules directory and passing in --prod ensures that only the production dependencies are installed. This ensures that the node_modules directory is as optimized as possible
-RUN yarn install --prod --frozen-lockfile && yarn cache clean --all
-RUN yarn global add @nestjs/cli typescript ts-node env-cmd
+RUN npm install --production --frozen-lockfile && npm cache clean --force
+RUN npm install -g @nestjs/cli typescript ts-node env-cmd
 
 ###################
 # PRODUCTION
@@ -35,5 +35,5 @@ COPY --from=build /usr/src/app/dist ./dist
 COPY package.json ./
 COPY .env.production .env
 EXPOSE $PORT
-CMD [ "yarn", "start:prod" ]
+CMD [ "npm", "run", "start:prod" ]
 
