@@ -1,0 +1,106 @@
+name: Hanu-Sourviner-Deployment
+
+on:
+  push:
+    branches:
+      - production
+
+concurrency:
+  group: ${{ github.workflow }}
+
+jobs:
+  # install-dependencies:
+  #   name: Install Dependencies
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v2
+  #     - name: Install Dependencies
+  #       run: yarn install
+
+  # lint:
+  #   name: Lint
+  #   runs-on: ubuntu-latest
+  #   needs: install-dependencies
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v2
+  #     - name: Lint code
+  #       run: yarn lint
+
+  build:
+    name: Build
+    # needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Install Dependencies
+        run: yarn install
+      - name: Build
+        run: |
+          yarn build
+        # run: |
+        #   yarn build
+        #   docker build -t sourviner_backend:v1 .
+        #   docker save -o sourviner_backend-${{ github.run_id }}.tar sourviner_backend:v1
+        #   zip sourviner_backend-${{ github.run_id }}.zip sourviner_backend-${{ github.run_id }}.tar
+
+  # copy:
+  #   name: Copy File
+  #   needs: build
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v2
+  #     - name: Copy file via SSH password
+  #       uses: appleboy/scp-action@v0.1.4
+  #       with:
+  #         host: ${{ secrets.VM_HOST }}
+  #         port: ${{ secrets.VM_PORT }}
+  #         username: ${{ secrets.VM_USERNAME }}
+  #         password: ${{ secrets.VM_PASSWORD }}
+  #         source: "docker-compose.yml,sourviner_backend-${{ github.run_id }}.zip,sourviner_backend-${{ github.run_id }}.tar,.env.production"
+  #         target: /home/sourviner-backend
+
+  deploy:
+    name: Deploy
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: SSH into VM and Deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VM_HOST }}
+          port: ${{ secrets.VM_PORT }}
+          username: ${{ secrets.VM_USERNAME }}
+          password: ${{ secrets.VM_PASSWORD }}
+          script: |
+            cd /home/hanu-sourviner-backend
+            git checkout production
+            git pull origin production
+            cp .env.production .env
+            yarn dc:prod
+            docker system prune -a -f
+            exit
+
+  # cleanup:
+  #   name: Cleanup
+  #   needs: deploy
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v2
+  #     - name: SSH into VM and Cleanup
+  #       uses: appleboy/ssh-action@master
+  #       with:
+  #         host: ${{ secrets.VM_HOST }}
+  #         port: ${{ secrets.VM_PORT }}
+  #         username: ${{ secrets.VM_USERNAME }}
+  #         password: ${{ secrets.VM_PASSWORD }}
+  #         script: |
+  #           cd /home/sourviner-backend
+  #           docker system prune -a -f
+  #           exit
