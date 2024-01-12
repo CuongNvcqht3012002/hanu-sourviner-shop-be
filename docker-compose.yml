@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: api_container
+    container_name: be_hanu_sourviner_api
     restart: always
     env_file:
       - .env
