@@ -1,8 +1,11 @@
-import { Controller, Post, Body, HttpException, HttpStatus, Get, Req, Res } from '@nestjs/common'
+import { Controller, Get } from '@nestjs/common'
+import { AppService } from 'src/modules/app/app.service'
 @Controller()
 export class AppController {
+  constructor(private readonly appService: AppService) {}
+
   @Get()
   hello() {
-    return 'Lom zom'
+    return this.appService.getHello()
   }
 }
