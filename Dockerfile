@@ -5,8 +5,9 @@
 FROM node:18-alpine As development
 WORKDIR /usr/src/app
 COPY package.json startup.sh .env.production ./
-# RUN npm ci --frozen-lockfile
+RUN npm install --no-package-lock --ignore-scripts
 COPY . .
+RUN npm ci --frozen-lockfile
 
 ###################
 # BUILD FOR PRODUCTION
