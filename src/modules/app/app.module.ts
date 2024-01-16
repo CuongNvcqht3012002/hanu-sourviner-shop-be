@@ -1,70 +1,68 @@
-import { MiddlewareConsumer, Module, ValidationPipe } from '@nestjs/common'
-import { AppController } from './app.controller'
-import { AppService } from './app.service'
+import { Module, MiddlewareConsumer } from '@nestjs/common'
+import databaseConfig from 'config/database.config'
+import authConfig from 'config/auth.config'
+import appConfig from 'config/app.config'
+import mailConfig from 'config/mail.config'
+import fileConfig from 'config/file.config'
+import { MailerModule } from '@nestjs-modules/mailer'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { TypeOrmModule } from '@nestjs/typeorm'
-import { dataSource } from '../../database/data-source'
-import { UserModule } from '../user/user.module'
-import { ItemModule } from '../item/item.module'
-import { CartModule } from '../cart/cart.module'
-import { DiscountModule } from '../discount/discount.module'
-import { MailerModule } from '@nestjs-modules/mailer'
-import { mailerConfig } from '../mail/mail-config.service'
-import databaseConfig from 'src/config/database.config'
-import mailConfig from 'src/config/mail.config'
-import appConfig from 'src/config/app.config'
-import { AppLoggerMiddleware } from 'src/middlewares/logger.middleware'
-import authConfig from 'src/config/auth.config'
-import { AuthModule } from '../auth/auth.module'
-import { OrderModule } from '../order/order.module'
+import { TypeOrmConfigService } from 'database/typeorm-config.service'
+import { MailConfigService } from 'modules/mail/mail-config.service'
+import { DataSource } from 'typeorm'
+import { AppLoggerMiddleware } from 'middlewares/logger.middleware'
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler'
+import { AppController } from 'modules/app/app.controller'
+import { AppService } from 'modules/app/app.service'
 import { APP_GUARD } from '@nestjs/core'
-import { JwtModule } from '@nestjs/jwt'
-import { PassportModule } from '@nestjs/passport'
-import { TrimJsonMiddleware } from 'src/middlewares/trimJson.middleware'
+import { FeedbacksModule } from 'modules/feedbacks/feedbacks.module'
+import { ScheduleModule } from '@nestjs/schedule'
 
 @Module({
   imports: [
-    // For configuration
+    // Config
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [appConfig, authConfig, databaseConfig, mailConfig],
+      load: [databaseConfig, authConfig, appConfig, mailConfig, fileConfig],
+      envFilePath: ['.env'],
     }),
 
-    // For connecting db
-    TypeOrmModule.forRootAsync({
+    ThrottlerModule.forRootAsync({
+      imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: dataSource,
-    }),
-
-    //For sending mail
-    MailerModule.forRootAsync({
-      inject: [ConfigService],
-      useFactory: mailerConfig, // Use the mailerConfig function to configure MailerModule
-    }),
-
-    JwtModule.registerAsync({
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        secret: configService.get('auth.secret'),
-        signOptions: {
-          expiresIn: configService.get('auth.expires'),
-        },
+      useFactory: (config: ConfigService) => ({
+        ttl: config.get('app.throttleTTL'),
+        limit: config.get('app.throttleLimit'),
       }),
     }),
 
-    // Entity modules
-    AuthModule,
-    UserModule,
-    ItemModule,
-    CartModule,
-    OrderModule,
-    DiscountModule,
+    TypeOrmModule.forRootAsync({
+      useClass: TypeOrmConfigService,
+      dataSourceFactory: async (options) => {
+        const dataSource = await new DataSource(options).initialize()
+        return dataSource
+      },
+    }),
+
+    MailerModule.forRootAsync({
+      useClass: MailConfigService,
+    }),
+
+    FeedbacksModule,
+    ScheduleModule.forRoot(),
   ],
+
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer): void {
-    consumer.apply(AppLoggerMiddleware, TrimJsonMiddleware).forRoutes('*')
+    consumer.apply(AppLoggerMiddleware).forRoutes('*')
   }
 }

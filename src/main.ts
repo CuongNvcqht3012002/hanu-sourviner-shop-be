@@ -1,41 +1,60 @@
-import { NestFactory } from '@nestjs/core'
-import { AppModule } from './modules/app/app.module'
-import { useContainer } from 'class-validator'
-import helmet from 'helmet'
-import * as compression from 'compression'
+import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
-import { ValidationPipe } from '@nestjs/common'
-import validationPipeOptions from './utils/validation-pipe-option'
-import { BaseExceptionFilter } from './exceptions/exception.filter'
-import setupSwagger from './setupSwagger'
+import { NestFactory, Reflector } from '@nestjs/core'
+import { useContainer } from 'class-validator'
+import { AppModule } from 'modules/app/app.module'
+import validationOptions from 'utils/validation-options'
+
+import setupSwagger from 'src/setupSwagger'
+import * as compression from 'compression'
+import helmet from 'helmet'
+import { ResponseInterceptor } from 'src/interceptors/response.interceptor'
+// import { TimeoutInterceptor } from 'src/interceptors/timeout.interceptor'
+import { BaseExceptionFilter } from 'exceptions/exception.filter'
+// import { RedisIoAdapter } from 'src/modules/sockets/adapters/redis-io.adapter'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
-  const configService = app.get(ConfigService)
-
   useContainer(app.select(AppModule), { fallbackOnErrors: true })
+  const configService = app.get(ConfigService)
 
   app.enableShutdownHooks()
 
+  // Swagger
   setupSwagger(app)
 
+  // Helmet
   app.use(helmet())
 
+  // Compression
   app.use(compression())
 
-  app.enableCors({
-    origin: configService.get('FRONTEND_DOMAIN'),
-    methods: ['GET', 'POST', 'PATCH', 'DELETE', 'HEAD', 'PUT'],
-  })
+  // Cors
+  // app.enableCors({
+  //   origin: [configService.get('app.frontendDomain')],
+  //   methods: ['GET', 'POST', 'PATCH', 'DELETE', 'HEAD', 'PUT', 'OPTIONS'],
+  //   credentials: true,
+  // })
+  app.enableCors()
 
   // Validation
-  app.useGlobalPipes(new ValidationPipe(validationPipeOptions))
+  app.useGlobalPipes(new ValidationPipe(validationOptions))
 
-  // app.useGlobalGuards(AuthGuard)
+  // Exception => Define the common error response
+  // In development, it should show error
+  if (configService.get('app.nodeEnv') === 'production')
+    app.useGlobalFilters(new BaseExceptionFilter())
 
-  // Exception
-  app.useGlobalFilters(new BaseExceptionFilter())
+  // Interceptor
+  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)))
+
+  // Interceptor => Define the common success response
+  app.useGlobalInterceptors(new ResponseInterceptor())
+
+  // Interceptor => Response error if request timeout
+  // app.useGlobalInterceptors(new TimeoutInterceptor(configService))
 
   await app.listen(configService.get('app.port'))
 }
-bootstrap()
+
+void bootstrap()

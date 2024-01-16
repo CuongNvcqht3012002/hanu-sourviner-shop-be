@@ -3,8 +3,8 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger'
 
 export default function (app: INestApplication) {
   const config = new DocumentBuilder()
-    .setTitle('Souvenir Shop')
-    .setDescription('API description')
+    .setTitle("Hanu Souviner Shop's Document")
+    .setDescription('The Hanu Souviner Shop API description')
     .setVersion('1.0')
     .addBearerAuth()
     .build()

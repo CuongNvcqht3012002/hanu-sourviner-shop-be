@@ -1,70 +1,63 @@
 import { MailerService } from '@nestjs-modules/mailer'
 import { Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
+import { IMailData } from 'modules/mail/interfaces/mail-data.interface'
 
 @Injectable()
 export class MailService {
   constructor(private mailerService: MailerService, private configService: ConfigService) {}
 
-  async sendEmail() {
-    try {
-      await this.mailerService.sendMail({
-        to: 'hoangminhtaiit@gmail.com',
-        subject: 'testing email',
-        text: 'Helo',
-        html: '<h1> Whats up </h1>',
-      })
-      console.log('Email sent successfully')
-    } catch (error) {
-      console.error('Error sending email:', error)
-    }
-  }
-
-  async verifyEmail(email: string, token: string) {
-    const verificationLink = `${process.env.BACKEND_DOMAIN}/auth/confirm?email=${email}&token=${token}`
-
+  async verifyEmail(mailData: IMailData<{ code: string }>) {
     await this.mailerService.sendMail({
-      to: email,
-      subject: 'Verification email',
+      to: mailData.to,
+      subject: 'Xác nhận Email',
+      text: `${this.configService.get('app.frontendDomain')}/confirm-email/${
+        mailData.data.code
+      } Confirm email`,
       template: 'confirm-email',
       context: {
-        app_name: this.configService.get('app.name'),
-        title: 'Verify Your Email Address',
-        text1: 'Hello!',
-        text2: `Thank you for signing up with ${this.configService.get('app.name')}.`,
-        text3:
-          'To complete the registration process, please click the button below to verify your email address.',
-        verificationLink: verificationLink,
+        title: 'Confirm email',
+        url: `${this.configService.get('app.frontendDomain')}/confirm-email/${mailData.data.code}`,
+        actionTitle: 'Confirm email',
+        // appName: this.configService.get('app.name'),
+        appName: mailData.data.code,
+        text1: 'Email từ Tiếng Trung Mimi',
+        // text2: 'You’re almost ready to start enjoying',
+        text2: 'Hãy sử dụng mã này để xác nhận email của bạn:',
+        // text3: 'Simply click the big green button below to verify your email address.',
+        text3: '',
       },
     })
   }
 
-  async forgotPassword(mailData) {
+  async forgotPassword(mailData: IMailData<{ code: string }>) {
     await this.mailerService.sendMail({
       to: mailData.to,
-      subject: 'Reset password',
+      subject: 'Yêu cầu đặt lại mật khẩu',
       text: `${this.configService.get('app.frontendDomain')}/password-change/${
         mailData.data.code
       } Reset password`,
       template: 'reset-password',
       context: {
         title: 'Reset password',
-        url: `${this.configService.get('app.frontendDomain')}/password-change/${
-          mailData.data.code
-        }`,
+        url: `${this.configService.get('app.frontendDomain')}/auth/reset-password?email=${
+          mailData.to
+        }&code=${mailData.data.code}`,
         actionTitle: 'Reset password',
-        // app_name: this.configService.get('app.name'),
-        app_name: mailData.data.code,
-        text1: 'Trouble signing in?',
-        text2: 'Resetting your password is easy.',
-        text3:
-          'Just press the button below and follow the instructions. We’ll have you up and running in no time.',
+        // appName: this.configService.get('app.name'),
+        appName: mailData.data.code,
+        text1: 'Email từ Tiếng Trung Mimi',
+        text2: 'Hãy sử dụng mã này để đặt lại mật khẩu của bạn:',
+        // text3:
+        //   'Just press the button below and follow the instructions. We’ll have you up and running in no time.',
+        // text3: 'Simply click the big button below to reset your password.',
+        text3: '',
         text4: 'If you did not make this request then please ignore this email.',
       },
     })
   }
 
-  async recoverAccount(mailData) {
+  async recoverAccount(mailData: IMailData<{ code: string }>) {
     await this.mailerService.sendMail({
       to: mailData.to,
       subject: 'Recover account',
@@ -74,13 +67,32 @@ export class MailService {
       template: 'recover-account',
       context: {
         title: 'Recover account',
-        url: `${this.configService.get('app.frontendDomain')}/confirm-email/${mailData.data.code}`,
+        url: `${this.configService.get('app.frontendDomain')}/auth/recover-account?email=${
+          mailData.to
+        }&code=${mailData.data.code}`,
         actionTitle: 'Recover account',
-        // app_name: this.configService.get('app.name'),
-        app_name: mailData.data.code,
+        appName: this.configService.get('app.name'),
+        // appName: mailData.data.code,
         text1: 'Hey!',
-        text2: 'You’re almost ready to start enjoying',
-        text3: 'Simply click the big green button below to verify your email address.',
+        // text2: 'You’re almost ready to start enjoying',
+        text2: 'Using this code to recover account',
+        // text3: 'Simply click the big green button below to verify your email address.',
+        text3: 'Simply click the big button below to recover your account',
+      },
+    })
+  }
+
+  async activateCourses(mailData: IMailData<{ courses }>) {
+    const courses = mailData.data.courses
+
+    await this.mailerService.sendMail({
+      to: mailData.to,
+      subject: 'Cảm ơn bạn đã mua khóa học',
+      text: `Chào ${mailData.to},\n\nCảm ơn bạn đã mua các khóa học sau:`,
+      template: 'thank-you-purchase',
+      context: {
+        to: mailData.to,
+        courses,
       },
     })
   }
