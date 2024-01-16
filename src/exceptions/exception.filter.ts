@@ -1,19 +1,20 @@
 import { ExceptionFilter, Catch, HttpException, ArgumentsHost, HttpStatus } from '@nestjs/common'
 
-@Catch(HttpException)
+@Catch()
 export class BaseExceptionFilter implements ExceptionFilter {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   catch(exception: any, host: ArgumentsHost) {
     const ctx = host.switchToHttp()
     const response = ctx.getResponse()
-    const message = exception.message || 'Oops! Something fails'
+    const message = exception.message || 'Failure'
     const errors = exception?.getResponse?.().errors || exception?.getResponse?.().error || ''
-    const status_code =
+    const statusCode =
       exception instanceof HttpException ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR
 
-    response.status(status_code).json({
-      errors,
-      status_code,
+    response.status(statusCode).json({
+      statusCode,
       message,
+      errors,
     })
   }
 }
