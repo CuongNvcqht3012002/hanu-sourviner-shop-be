@@ -42,8 +42,8 @@ async function bootstrap() {
 
   // Exception => Define the common error response
   // In development, it should show error
-  if (configService.get('app.nodeEnv') === 'production')
-    app.useGlobalFilters(new BaseExceptionFilter())
+  // if (configService.get('app.nodeEnv') === 'production')
+  app.useGlobalFilters(new BaseExceptionFilter())
 
   // Interceptor
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)))

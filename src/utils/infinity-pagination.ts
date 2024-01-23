@@ -6,12 +6,15 @@ interface IData<T> {
 }
 
 export const infinityPagination = <T>(data: IData<T>, options: IPaginationOptions) => {
+  const totalPages = Math.ceil(data.count / options.limit)
+  const hasNextPage = options.page < totalPages
+
   return {
     data: data.data,
     currentPage: options.page,
     limit: options.limit,
     totalItems: data.count,
-    totalPages: Math.ceil(data.count / options.limit),
-    hasNextPage: data.data.length === options.limit,
+    totalPages,
+    hasNextPage,
   }
 }

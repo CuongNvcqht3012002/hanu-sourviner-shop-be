@@ -4,7 +4,6 @@
   "description": "hanu-sourviner-shop-be",
   "author": "Đội tình nguyện hiến máu 2C HANU",
   "private": true,
-  "type": "module",
   "license": "UNLICENSED",
   "scripts": {
     "prebuild": "rimraf dist",
@@ -122,9 +121,5 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
-  },
-  "resolutions": {
-    "wrap-ansi": "7.0.0",
-    "string-width": "4.1.0"
   }
 }

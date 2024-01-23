@@ -11,6 +11,9 @@ export class BaseExceptionFilter implements ExceptionFilter {
     const statusCode =
       exception instanceof HttpException ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR
 
+    console.error('exception: ', exception)
+    console.error('message: ', message)
+    console.error('errors: ', errors)
     response.status(statusCode).json({
       statusCode,
       message,
