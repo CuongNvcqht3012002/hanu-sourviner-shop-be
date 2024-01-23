@@ -37,10 +37,10 @@ $ yarn dc:prod
 
 ```bash
 # Run app
-$ yarn dev => http://localhost:3000
+$ yarn dev => http://localhost:3002
 
 # Swagger
-$ http://localhost:3000/swagger
+$ http://localhost:3002/swagger
 
 ```
 
