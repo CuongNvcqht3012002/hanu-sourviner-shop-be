@@ -14,6 +14,10 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler'
 import { AppController } from 'modules/app/app.controller'
 import { AppService } from 'modules/app/app.service'
 import { APP_GUARD } from '@nestjs/core'
+import { ItemModule } from 'src/modules/item/item.module'
+import { CartModule } from 'src/modules/cart/cart.module'
+import { OrderModule } from 'src/modules/order/order.module'
+import { DiscountModule } from 'src/modules/discount/discount.module'
 
 @Module({
   imports: [
@@ -44,6 +48,12 @@ import { APP_GUARD } from '@nestjs/core'
     // MailerModule.forRootAsync({
     //   useClass: MailConfigService,
     // }),
+
+    ItemModule,
+    CartModule,
+    OrderModule,
+    DiscountModule,
+    
   ],
 
   controllers: [AppController],
