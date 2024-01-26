@@ -1,16 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { plainToClass } from 'class-transformer'
 import { Repository } from 'typeorm'
-import { Cart } from '../cart/cart.entity'
-import { CartService } from '../cart/cart.service'
-import { UpdateItemQuantityDto } from '../cart/dto/update-item-quantity.dto'
-import { Item } from '../item/item.entity'
-import { CreateOrderItemDto } from './dto/create-order-item.dto'
-import { CreateOrderDto } from './dto/create-order.dto'
-import { UpdateOrderDto } from './dto/update-order.dt'
-import { OrderItem } from './order-item.entity'
-import { Order } from './order.entity' // Import your Order entity
+import { Cart } from 'src/modules/cart/cart.entity'
+import { CartService } from 'src/modules/cart/cart.service'
+import { CreateOrderDto } from 'src/modules/order/dto/create-order.dto'
+import { UpdateOrderDto } from 'src/modules/order/dto/update-order.dt'
+import { OrderItem } from 'src/modules/order/order-item.entity'
+import { Order } from 'src/modules/order/order.entity' // Import your Order entity
 
 @Injectable()
 export class OrderService {
@@ -20,8 +16,6 @@ export class OrderService {
     @InjectRepository(OrderItem)
     private readonly orderItemRepository: Repository<OrderItem>,
     private readonly cartService: CartService,
-    @InjectRepository(Item)
-    private readonly itemRepository: Repository<Item>,
     @InjectRepository(Cart)
     private readonly cartRepository: Repository<Cart>
   ) {}
@@ -75,6 +69,8 @@ export class OrderService {
     if (!existingOrder) {
       throw new NotFoundException('Order not found')
     }
+
+    console.log(updateOrderDto)
 
     // Update the order properties based on updateOrderDto.
     // You should implement the logic for updating order details here.

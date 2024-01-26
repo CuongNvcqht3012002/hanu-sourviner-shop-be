@@ -1,8 +1,7 @@
 import { MaxLength, MinLength } from 'class-validator'
-import { BeforeInsert, BeforeUpdate, Column, Entity } from 'typeorm'
-import * as bcrypt from 'bcryptjs'
+import { Column, Entity } from 'typeorm'
 import { Exclude } from 'class-transformer'
-import { ROLE_ENUM } from 'src/modules/users/role.enum'
+import { ROLE_ENUM } from 'src/modules/user/role.enum'
 import { CoreEntity } from 'src/utils/core/core-entity'
 
 @Entity()
@@ -31,8 +30,6 @@ export class User extends CoreEntity {
   @Exclude()
   password: string
 
-  newPassword: string
-
   @Column({ type: 'enum', enum: ROLE_ENUM, default: ROLE_ENUM.USER })
   role: ROLE_ENUM
 
@@ -47,13 +44,4 @@ export class User extends CoreEntity {
 
   @Column({ default: false })
   verified: boolean
-
-  @BeforeInsert()
-  @BeforeUpdate()
-  async setPassword() {
-    if (!this.newPassword) return
-    const salt = await bcrypt.genSalt()
-    this.password = await bcrypt.hash(this.newPassword, salt)
-    this.newPassword = null
-  }
 }

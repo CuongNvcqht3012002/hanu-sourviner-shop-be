@@ -1,16 +1,4 @@
-import {
-  IsNotEmpty,
-  IsString,
-  IsArray,
-  ArrayMinSize,
-  ValidateNested,
-  IsInt,
-  Min,
-  IsOptional,
-  IsPhoneNumber,
-} from 'class-validator'
-import { Type } from 'class-transformer'
-import { CreateOrderItemDto } from './create-order-item.dto' // Import your CreateOrderItemDto
+import { IsNotEmpty, IsOptional, IsPhoneNumber } from 'class-validator'
 
 export class CreateOrderDto {
   @IsNotEmpty()

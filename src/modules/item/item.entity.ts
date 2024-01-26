@@ -1,8 +1,8 @@
 import { CATEGORY_ENUM } from 'src/modules/item/category.enum'
 import { CoreEntity } from 'src/utils/core/core-entity'
 import { Column, Entity, OneToMany, OneToOne } from 'typeorm'
-import { Discount } from '../discount/discount.entity'
-import { Image } from '../image/image.entity'
+import { Discount } from 'src/modules/discount/discount.entity'
+import { Image } from 'src/modules/image/image.entity'
 
 @Entity()
 export class Item extends CoreEntity {

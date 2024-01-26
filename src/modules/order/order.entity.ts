@@ -1,16 +1,8 @@
 import { STATUS_ENUM } from 'src/modules/order/order-status.enum'
-import { User } from 'src/modules/users/user.entity'
+import { User } from 'src/modules/user/user.entity'
 import { CoreEntity } from 'src/utils/core/core-entity'
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-  OneToMany,
-  ManyToOne,
-} from 'typeorm'
-import { OrderItem } from './order-item.entity' // Import your OrderItem entity
+import { Entity, Column, OneToMany, ManyToOne } from 'typeorm'
+import { OrderItem } from 'src/modules/order/order-item.entity' // Import your OrderItem entity
 
 @Entity()
 export class Order extends CoreEntity {

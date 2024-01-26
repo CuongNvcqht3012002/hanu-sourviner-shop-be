@@ -1,7 +1,7 @@
 import { IsInt, Min } from 'class-validator'
 import { Column, Entity, ManyToOne, PrimaryColumn } from 'typeorm'
-import { Item } from '../item/item.entity'
-import { User } from 'src/modules/users/user.entity'
+import { Item } from 'src/modules/item/item.entity'
+import { User } from 'src/modules/user/user.entity'
 
 @Entity()
 export class Cart {

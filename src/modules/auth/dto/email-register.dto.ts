@@ -7,12 +7,11 @@ import {
   IsStrongPassword,
   MaxLength,
   MinLength,
-  Validate,
 } from 'class-validator'
 import { Transform } from 'class-transformer'
 
 export class EmailRegisterDto {
-  @ApiProperty({ example: 'TaiSmile' })
+  @ApiProperty({ example: 'Abudabi' })
   @IsNotEmpty()
   @Transform(({ value }) => value?.toLowerCase())
   @MinLength(5)

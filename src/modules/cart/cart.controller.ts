@@ -1,21 +1,11 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  ParseIntPipe,
-  Post,
-  Put,
-  Req,
-  UseGuards,
-} from '@nestjs/common'
-import { CartService } from './cart.service'
-import { UpdateItemQuantityDto } from './dto/update-item-quantity.dto'
-import { ApiTags, ApiOperation, ApiBody, ApiParam, ApiBearerAuth } from '@nestjs/swagger'
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common'
+import { CartService } from 'src/modules/cart/cart.service'
+import { UpdateItemQuantityDto } from 'src/modules/cart/dto/update-item-quantity.dto'
+import { ApiTags, ApiOperation, ApiBody, ApiBearerAuth } from '@nestjs/swagger'
 import { Roles } from 'src/decorators/roles.decorator'
-import { ROLE_ENUM } from 'src/modules/users/role.enum'
+import { ROLE_ENUM } from 'src/modules/user/role.enum'
 import { AuthGuard } from '@nestjs/passport'
-import { RolesGuard } from '../auth/roleguard'
+import { RolesGuard } from 'src/modules/auth/roleguard'
 
 @ApiTags('Cart')
 @Controller('cart')
@@ -27,14 +17,14 @@ export class CartController {
 
   @ApiOperation({ summary: 'Get Cart' })
   @Get()
-  async getCart(@Req() req) {
+  getCart(@Req() req) {
     return this.cartService.getCart(req.user.id)
   }
 
   @ApiOperation({ summary: 'Update Cart Item Quantity' })
   @Post('update-quantity')
   @ApiBody({ type: UpdateItemQuantityDto })
-  async updateCartItemQuantity(@Req() req, @Body() updateItemQuantityDto: UpdateItemQuantityDto) {
+  updateCartItemQuantity(@Req() req, @Body() updateItemQuantityDto: UpdateItemQuantityDto) {
     return this.cartService.updateCartItemQuantity(req.user.id, updateItemQuantityDto)
   }
 }

@@ -1,8 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
-import { Cart } from './cart.entity'
-import { UpdateItemQuantityDto } from './dto/update-item-quantity.dto'
+import { Cart } from 'src/modules/cart/cart.entity'
+import { UpdateItemQuantityDto } from 'src/modules/cart/dto/update-item-quantity.dto'
 
 @Injectable()
 export class CartService {
@@ -54,7 +54,7 @@ export class CartService {
     return this.cartRepository.save(cartItem)
   }
 
-  async getCart(userId: string): Promise<Cart[]> {
+  getCart(userId: string): Promise<Cart[]> {
     // Find all item in cart, apply any discount and sum up
     const itemList = this.cartRepository.findBy({ userId })
     return itemList

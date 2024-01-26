@@ -2,9 +2,9 @@ import { Controller, Get, Param, UseGuards } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
 import { ApiBearerAuth, ApiTags, ApiOperation } from '@nestjs/swagger'
 import { Roles } from 'src/decorators/roles.decorator'
-import { RolesGuard } from '../auth/roleguard'
-import { ROLE_ENUM } from 'src/modules/users/role.enum'
-import { ItemService } from './item.service'
+import { RolesGuard } from 'src/modules/auth/roleguard'
+import { ItemService } from 'src/modules/item/item.service'
+import { ROLE_ENUM } from 'src/modules/user/role.enum'
 
 @ApiBearerAuth()
 @ApiTags('Item')
@@ -16,13 +16,13 @@ export class ItemController {
 
   @ApiOperation({ summary: 'Find All Items' })
   @Get()
-  async findAll() {
+  findAll() {
     return this.itemService.findAll()
   }
 
   @ApiOperation({ summary: 'Find an Item by ID' })
   @Get(':id')
-  async findOne(@Param('id') id: string) {
+  findOne(@Param('id') id: string) {
     return this.itemService.findOne(id)
   }
 }

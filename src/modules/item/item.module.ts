@@ -1,20 +1,18 @@
 import { Module } from '@nestjs/common'
 import { MulterModule } from '@nestjs/platform-express'
 import { TypeOrmModule } from '@nestjs/typeorm'
-import { Image } from '../image/image.entity'
-import { AdminItemController } from './admin.item.controller'
-import { ItemController } from './item.controller'
-import { Item } from './item.entity'
-import { ItemService } from './item.service'
+import { Image } from 'src/modules/image/image.entity'
+import { AdminItemController } from 'src/modules/item/admin.item.controller'
+import { ItemController } from 'src/modules/item/item.controller'
+import { Item } from 'src/modules/item/item.entity'
+import { ItemService } from 'src/modules/item/item.service'
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Item, Image]),
-    MulterModule.register({
-      dest: './uploads',
-    }),
   ],
   controllers: [ItemController, AdminItemController],
   providers: [ItemService],
+  exports: [ItemService]
 })
 export class ItemModule {}

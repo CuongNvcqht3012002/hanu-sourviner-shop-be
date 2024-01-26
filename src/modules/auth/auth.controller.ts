@@ -1,19 +1,8 @@
-import {
-  Body,
-  Controller,
-  Get,
-  HttpCode,
-  HttpStatus,
-  Param,
-  Post,
-  Query,
-  Res,
-  UseGuards,
-} from '@nestjs/common'
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, Query, Res } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
-import { AuthService } from './auth.service'
-import { EmailRegisterDto } from './dto/email-register.dto'
-import { UserLoginDto } from './dto/user-login.dto'
+import { AuthService } from 'src/modules/auth/auth.service'
+import { EmailRegisterDto } from 'src/modules/auth/dto/email-register.dto'
+import { UserLoginDto } from 'src/modules/auth/dto/user-login.dto'
 
 @ApiBearerAuth()
 @ApiTags('Auth')
@@ -38,11 +27,7 @@ export class AuthController {
   @ApiOperation({ summary: 'User - Verify account' })
   @Get('confirm')
   @HttpCode(HttpStatus.OK)
-  async confirmEmail(
-    @Query('token') token: string,
-    @Query('email') email: string,
-    @Res() res: any
-  ) {
+  async confirmEmail(@Query('token') token: string, @Query('email') email: string, @Res() res) {
     const confirmed = await this.authService.confirmEmail(token, email)
     if (confirmed) {
       res.redirect('https://www.youtube.com/watch?v=CRIGj6Qgqiw&ab_channel=BlueSkyMusic')

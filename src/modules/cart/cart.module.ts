@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common'
 import { TypeOrmModule } from '@nestjs/typeorm'
-import { CartController } from './cart.controller'
-import { Cart } from './cart.entity'
-import { CartService } from './cart.service'
+import { CartController } from 'src/modules/cart/cart.controller'
+import { Cart } from 'src/modules/cart/cart.entity'
+import { CartService } from 'src/modules/cart/cart.service'
 
 @Module({
   imports: [TypeOrmModule.forFeature([Cart])],

@@ -34,7 +34,7 @@ export class MailService {
         text2: `Thank you for signing up with ${this.configService.get('app.name')}.`,
         text3:
           'To complete the registration process, please click the button below to verify your email address.',
-        verificationLink: verificationLink,
+        verificationLink,
       },
     })
   }

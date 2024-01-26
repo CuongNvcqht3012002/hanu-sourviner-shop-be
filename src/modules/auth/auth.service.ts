@@ -8,24 +8,24 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { plainToClass } from 'class-transformer'
 import { nanoid } from 'nanoid'
 import { Repository } from 'typeorm'
-import { MailService } from '../mail/mail.service'
-import { EmailRegisterDto } from '../auth/dto/email-register.dto'
-import { UserLoginDto } from '../auth/dto/user-login.dto'
-import { Verification } from './verification.entity'
+import { MailService } from 'src/modules/mail/mail.service'
+import { EmailRegisterDto } from 'src/modules/auth/dto/email-register.dto'
+import { UserLoginDto } from 'src/modules/auth/dto/user-login.dto'
+import { Verification } from 'src/modules/auth/verification.entity'
 import * as bcrypt from 'bcryptjs'
 import { JwtService } from '@nestjs/jwt'
 import { isEmail } from 'class-validator'
-import { User } from 'src/modules/users/user.entity'
+import { User } from 'src/modules/user/user.entity'
+import { UserService } from 'src/modules/user/user.service'
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
     @InjectRepository(Verification)
     private readonly verificationRepository: Repository<Verification>,
     private readonly mailService: MailService,
-    private jwtService: JwtService
+    private readonly jwtService: JwtService,
+    private readonly userService: UserService
   ) {}
 
   /* Method receives user's register data, create a new user and send verification email*/
@@ -34,19 +34,17 @@ export class AuthService {
 
     // Check exist email and username
     const { email, username } = userRegisterDto
-    const userByEmail = await this.userRepository.findOneBy({ email })
+    const userByEmail = await this.userService.findOneBy({ email })
     if (userByEmail) {
       throw new BadRequestException('Email already exists.')
     }
-    const userByUsername = await this.userRepository.findOneBy({ username })
+    const userByUsername = await this.userService.findOneBy({ username })
     if (userByUsername) {
       throw new BadRequestException('Username already exists.')
     }
 
     // Create new user
-    const user = plainToClass(User, userRegisterDto)
-    user.newPassword = userRegisterDto.password
-    await this.userRepository.save(user)
+    await this.userService.create(userRegisterDto);
 
     // Create verification code
     const verification = new Verification()
@@ -65,10 +63,8 @@ export class AuthService {
     const verification = await this.verificationRepository.findOneBy({ email })
 
     if (verification) {
-      const user = await this.userRepository.findOneBy({ email })
-      user.verified = true
-
-      await this.userRepository.save(user)
+      const user = await this.userService.findOneBy({ email })
+      await this.userService.update(user.id, {verified: true})
       await this.verificationRepository.delete({ email })
 
       return true
@@ -81,24 +77,19 @@ export class AuthService {
 
     let user: User
     if (isEmail(usernameOrEmail))
-      user = await this.userRepository.findOneBy({ email: usernameOrEmail })
-    else user = await this.userRepository.findOneBy({ username: usernameOrEmail })
+      user = await this.userService.findOneBy({ email: usernameOrEmail })
+    else user = await this.userService.findOneBy({ username: usernameOrEmail })
 
     if (!user) throw new NotFoundException('Username not exist')
-    console.log(password, user.password)
     const isPasswordValid = await bcrypt.compare(password, user.password)
     if (!user.verified) throw new UnauthorizedException('Account not verified')
     if (!isPasswordValid) throw new UnauthorizedException('Wrong password')
 
-    const token = await this.createTokens(user)
+    const token = await this._createTokens(user)
     return { ...token, ...user }
   }
 
-  async findOne(username: string) {
-    return this.userRepository.findOneBy({ username })
-  }
-
-  async createTokens(user: User) {
+  async _createTokens(user: User): Promise<{ access_token: string; refresh_token: string }> {
     const access_token = await this.jwtService.sign({
       id: user.id,
       role: user.role,
@@ -114,7 +105,7 @@ export class AuthService {
   }
 
   // Implement methods for user validation, token generation, etc.
-  async validateUser(userId: string) {
-    return this.userRepository.findOneBy({ id: userId })
+  async validateUser(userId: string): Promise<User> {
+    return await this.userService.findOneBy({ id: userId })
   }
 }

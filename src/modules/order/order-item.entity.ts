@@ -1,6 +1,6 @@
+import { Order } from 'src/modules/order/order.entity'
 import { CoreEntity } from 'src/utils/core/core-entity'
-import { Entity,  Column, ManyToOne } from 'typeorm'
-import { Order } from './order.entity'
+import { Entity, Column, ManyToOne } from 'typeorm'
 
 @Entity()
 export class OrderItem extends CoreEntity {

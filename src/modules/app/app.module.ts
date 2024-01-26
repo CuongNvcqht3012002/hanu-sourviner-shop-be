@@ -53,7 +53,6 @@ import { DiscountModule } from 'src/modules/discount/discount.module'
     CartModule,
     OrderModule,
     DiscountModule,
-    
   ],
 
   controllers: [AppController],
