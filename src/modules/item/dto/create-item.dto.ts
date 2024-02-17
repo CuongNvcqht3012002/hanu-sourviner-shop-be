@@ -4,23 +4,23 @@ import { CATEGORY_ENUM } from 'src/modules/item/category.enum'
 
 export class CreateItemDto {
   @ApiProperty({ example: 'ItemName' })
-  @IsNotEmpty()
+  @IsNotEmpty({message: "Mục này là bắt buộc"})
   @IsString()
   name: string
 
   @ApiProperty({ example: 10.99 })
-  @IsNotEmpty()
+  @IsNotEmpty({message: "Mục này là bắt buộc"})
   @IsNumber()
   @Min(0)
   price: number
 
   @ApiProperty({ example: 'ItemCode' })
-  @IsNotEmpty()
+  @IsNotEmpty({message: "Mục này là bắt buộc"})
   @IsString()
   code: string
 
   @ApiProperty({ example: 100 })
-  @IsNotEmpty()
+  @IsNotEmpty({message: "Mục này là bắt buộc"})
   @IsInt()
   @Min(0)
   quantity: number
@@ -36,7 +36,7 @@ export class CreateItemDto {
   description?: string
 
   @ApiProperty({ example: 'CategoryEnumValue' })
-  @IsNotEmpty()
+  @IsNotEmpty({message: "Mục này là bắt buộc"})
   @IsEnum(CATEGORY_ENUM)
   category: CATEGORY_ENUM
 }

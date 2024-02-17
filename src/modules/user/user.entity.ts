@@ -42,6 +42,6 @@ export class User extends CoreEntity {
   @Column({ default: false })
   receiveInfoAndPolicy: boolean
 
-  @Column({ default: false })
+  @Column({ default: true })
   verified: boolean
 }

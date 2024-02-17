@@ -5,7 +5,6 @@ import {
   UnauthorizedException,
 } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { plainToClass } from 'class-transformer'
 import { nanoid } from 'nanoid'
 import { Repository } from 'typeorm'
 import { MailService } from 'src/modules/mail/mail.service'
@@ -23,7 +22,7 @@ export class AuthService {
   constructor(
     @InjectRepository(Verification)
     private readonly verificationRepository: Repository<Verification>,
-    private readonly mailService: MailService,
+    // private readonly mailService: MailService,
     private readonly jwtService: JwtService,
     private readonly userService: UserService
   ) {}
@@ -44,7 +43,7 @@ export class AuthService {
     }
 
     // Create new user
-    await this.userService.create(userRegisterDto);
+    await this.userService.create(userRegisterDto)
 
     // Create verification code
     const verification = new Verification()
@@ -54,7 +53,7 @@ export class AuthService {
     this.verificationRepository.save(verification)
 
     // Send email verification
-    await this.mailService.verifyEmail(verification.email, verification.token)
+    // await this.mailService.verifyEmail(verification.email, verification.token)
     return `Email Verification has been sent to email ${verification.email}. For development, token: ${verification.token}`
   }
 
@@ -64,7 +63,7 @@ export class AuthService {
 
     if (verification) {
       const user = await this.userService.findOneBy({ email })
-      await this.userService.update(user.id, {verified: true})
+      await this.userService.update(user.id, { verified: true })
       await this.verificationRepository.delete({ email })
 
       return true
@@ -73,23 +72,20 @@ export class AuthService {
   }
 
   async login(userLoginDto: UserLoginDto) {
-    const { usernameOrEmail, password } = userLoginDto
+    const { username, password } = userLoginDto
 
-    let user: User
-    if (isEmail(usernameOrEmail))
-      user = await this.userService.findOneBy({ email: usernameOrEmail })
-    else user = await this.userService.findOneBy({ username: usernameOrEmail })
+    let user = await this.userService.findOneBy({ username })
 
     if (!user) throw new NotFoundException('Username not exist')
     const isPasswordValid = await bcrypt.compare(password, user.password)
     if (!user.verified) throw new UnauthorizedException('Account not verified')
     if (!isPasswordValid) throw new UnauthorizedException('Wrong password')
 
-    const token = await this._createTokens(user)
+    const token = await this.createTokens(user)
     return { ...token, ...user }
   }
 
-  async _createTokens(user: User): Promise<{ access_token: string; refresh_token: string }> {
+  async createTokens(user: User): Promise<{ access_token: string; refresh_token: string }> {
     const access_token = await this.jwtService.sign({
       id: user.id,
       role: user.role,

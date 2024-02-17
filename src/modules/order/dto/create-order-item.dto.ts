@@ -1,20 +1,20 @@
 import { IsNotEmpty, IsString, IsNumber, IsPositive } from 'class-validator'
 
 export class CreateOrderItemDto {
-  @IsNotEmpty()
+  @IsNotEmpty({message: "Mục này là bắt buộc"})
   @IsString()
   name: string
 
-  @IsNotEmpty()
+  @IsNotEmpty({message: "Mục này là bắt buộc"})
   @IsString()
   code: string
 
-  @IsNotEmpty()
+  @IsNotEmpty({message: "Mục này là bắt buộc"})
   @IsNumber()
   @IsPositive()
   quantity: number
 
-  @IsNotEmpty()
+  @IsNotEmpty({message: "Mục này là bắt buộc"})
   @IsNumber()
   @IsPositive()
   price: number

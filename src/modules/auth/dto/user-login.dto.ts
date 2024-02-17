@@ -5,11 +5,11 @@ import { IsNotEmpty } from 'class-validator'
 export class UserLoginDto {
   @ApiProperty({ example: 'taismile' })
   @Transform(({ value }) => value?.toLowerCase())
-  @IsNotEmpty()
-  usernameOrEmail: string
+  @IsNotEmpty({message: "Mục này là bắt buộc"})
+  username: string
 
   @ApiProperty({ example: 'password' })
   @Transform(({ value }) => value?.toLowerCase())
-  @IsNotEmpty()
+  @IsNotEmpty({message: "Mục này là bắt buộc"})
   password: string
 }

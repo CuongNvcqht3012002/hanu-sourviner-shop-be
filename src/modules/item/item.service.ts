@@ -29,7 +29,6 @@ export class ItemService {
     return this.itemRepository.save(newItem)
   }
 
-
   async update(id: string, updateItemDto: UpdateItemDto): Promise<Item | undefined> {
     const existingItem = await this.itemRepository.findOneBy({ id })
     if (!existingItem) {

@@ -7,9 +7,8 @@ import { Verification } from 'src/modules/auth/verification.entity'
 import { AuthController } from 'src/modules/auth/auth.controller'
 import { AuthService } from 'src/modules/auth/auth.service'
 import { JwtStrategy } from 'src/modules/auth/jwt.strategy'
-import { User } from 'src/modules/user/user.entity'
-import { UserService } from 'src/modules/user/user.service'
 import { UserModule } from 'src/modules/user/user.module'
+import { MailModule } from 'src/modules/mail/mail.module'
 
 @Module({
   imports: [
@@ -19,14 +18,16 @@ import { UserModule } from 'src/modules/user/user.module'
       useFactory: (configService: ConfigService) => ({
         secret: configService.get('auth.secret'),
         signOptions: {
-          expiresIn: configService.get('auth.expires'),
+          // expiresIn: configService.get('auth.expires'),
+          expiresIn: 50000,
         },
       }),
     }),
-    UserModule
+    UserModule,
+    // MailModule
   ],
   exports: [JwtModule, JwtStrategy],
   controllers: [AuthController],
-  providers: [AuthService, MailService, JwtStrategy],
+  providers: [AuthService, JwtStrategy],
 })
 export class AuthModule {}

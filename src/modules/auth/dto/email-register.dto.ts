@@ -12,25 +12,25 @@ import { Transform } from 'class-transformer'
 
 export class EmailRegisterDto {
   @ApiProperty({ example: 'Abudabi' })
-  @IsNotEmpty()
+  @IsNotEmpty({message: "Mục này là bắt buộc"})
   @Transform(({ value }) => value?.toLowerCase())
-  @MinLength(5)
-  @MaxLength(20)
+  @MinLength(5, {message: "Tên đăng nhập phải dài hơn 5 kí tự!"})
+  @MaxLength(20, {message: "Tên đăng nhập không được dài hơn 20 kí tự!"})
   username: string
 
   @ApiProperty({ example: 'test@gmail.com' })
   @Transform(({ value }) => value?.toLowerCase())
-  @IsEmail()
-  @IsNotEmpty()
+  @IsEmail({},{message: "Hãy nhập đúng định dạng email"})
+  @IsNotEmpty({message: "Mục này là bắt buộc"})
   email: string
 
   @ApiProperty()
-  @MaxLength(20)
-  @IsStrongPassword({ minLength: 8, minNumbers: 1, minLowercase: 1 })
+  @MaxLength(50, {message: "Mật khẩu quá dài?"})
+  @IsStrongPassword({ minLength: 8, minNumbers: 1, minUppercase: 1 }, {message: "Mật khẩu phải có ít nhất 8 kí tự bao gồm cả chữ số và chữ viết hoa"})
   password: string
 
   @ApiProperty()
-  @IsPhoneNumber('VN', { message: 'Invalid phone number format' })
+  @IsPhoneNumber('VN', { message: 'Số điện thoại không hợp lệ' })
   phoneNumber: string
 
   @ApiProperty({ example: 'Tai' })

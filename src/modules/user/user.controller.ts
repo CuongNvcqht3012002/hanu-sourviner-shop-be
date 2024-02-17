@@ -18,7 +18,7 @@ export class UserController {
   @ApiOperation({ summary: 'Get User Information' })
   @Get()
   get(@Req() req) {
-    return this.userService.findOneBy({id : req.user.id})
+    return this.userService.findOneBy({ id: req.user.id })
   }
 
   @ApiOperation({ summary: 'Update User Information' })

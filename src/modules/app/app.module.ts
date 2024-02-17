@@ -18,6 +18,7 @@ import { ItemModule } from 'src/modules/item/item.module'
 import { CartModule } from 'src/modules/cart/cart.module'
 import { OrderModule } from 'src/modules/order/order.module'
 import { DiscountModule } from 'src/modules/discount/discount.module'
+import { AuthModule } from 'src/modules/auth/auth.module'
 
 @Module({
   imports: [
@@ -49,6 +50,7 @@ import { DiscountModule } from 'src/modules/discount/discount.module'
     //   useClass: MailConfigService,
     // }),
 
+    AuthModule,
     ItemModule,
     CartModule,
     OrderModule,

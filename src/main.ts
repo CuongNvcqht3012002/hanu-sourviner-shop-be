@@ -30,12 +30,12 @@ async function bootstrap() {
   app.use(compression())
 
   // Cors
-  // app.enableCors({
-  //   origin: [configService.get('app.frontendDomain')],
-  //   methods: ['GET', 'POST', 'PATCH', 'DELETE', 'HEAD', 'PUT', 'OPTIONS'],
-  //   credentials: true,
-  // })
-  app.enableCors()
+  app.enableCors({
+    origin: [configService.get('app.frontendDomain')],
+    methods: ['GET', 'POST', 'PATCH', 'DELETE', 'HEAD', 'PUT', 'OPTIONS'],
+    credentials: true,
+  })
+  // app.enableCors()
 
   // Validation
   app.useGlobalPipes(new ValidationPipe(validationOptions))

@@ -1,17 +1,5 @@
-import {
-  Controller,
-  Param,
-  Post,
-  Patch,
-  Delete,
-  Body,
-  UseInterceptors,
-  UploadedFiles,
-  UseGuards,
-} from '@nestjs/common'
-import { FilesInterceptor } from '@nestjs/platform-express'
+import { Controller, Param, Post, Patch, Delete, Body, UseGuards } from '@nestjs/common'
 import { ApiBearerAuth, ApiTags, ApiOperation, ApiBody, ApiParam } from '@nestjs/swagger'
-import { multerOptions } from 'src/modules/image/multer.option'
 import { CreateItemDto } from 'src/modules/item/dto/create-item.dto'
 import { UpdateItemDto } from 'src/modules/item/dto/update-item.dto'
 import { ItemService } from 'src/modules/item/item.service'

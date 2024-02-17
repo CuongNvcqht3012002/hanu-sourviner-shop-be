@@ -9,6 +9,6 @@ import { Verification } from 'src/modules/auth/verification.entity'
   imports: [TypeOrmModule.forFeature([User, Verification])],
   controllers: [UserController],
   providers: [UserService],
-  exports: [UserService]
+  exports: [UserService],
 })
 export class UserModule {}
